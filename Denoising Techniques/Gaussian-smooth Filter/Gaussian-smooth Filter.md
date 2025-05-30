@@ -4,13 +4,15 @@
 
 A **Gaussian-smooth filter** (or **Gaussian filter**) is a type of **low-pass filter** that smooths or "blurs" a time series signal. It works by weighing the neighboring points of each sample based on a Gaussian distribution, which has the shape of a bell curve. The purpose of this filter is to remove high-frequency noise from a signal while preserving the underlying low-frequency components, such as trends or patterns.
 
+![image](https://github.com/user-attachments/assets/ce30a6f8-6edd-4d66-837e-cb6200e536a5)
+
+
 The key features of a Gaussian filter are:
 
 * **Gaussian Kernel**: The kernel (filter window) is created using a Gaussian function, which is a bell-shaped curve. The function has the general form:
 
-  $$
-  G(x) = \exp\left(-\frac{x^2}{2\sigma^2}\right)
-  $$
+  ![image](https://github.com/user-attachments/assets/276552d3-7d37-43b4-bbea-ce96ba1a8a35)
+
 
   Where $\sigma$ controls the width of the bell curve.
 
@@ -124,9 +126,8 @@ xlabel('Time (ms)'), ylabel('Gain')
 
    * **`gauswin = exp( -(4*log(2)*gtime.^2) / fwhm^2 );`** creates the **Gaussian window** using the standard formula for a Gaussian function:
 
-     $$
-     G(x) = \exp\left(-\frac{x^2}{2\sigma^2}\right)
-     $$
+![image](https://github.com/user-attachments/assets/49f2c6f6-9cde-4e4c-9808-5aa78f09b22e)
+
 
      The factor `(4*log(2))` and division by `fwhm^2` ensures the correct scaling for the FWHM.
 
