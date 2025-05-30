@@ -34,6 +34,9 @@ Where:
 
 The filter moves through the entire signal, applying this average calculation to each point in the signal, except at the boundaries where fewer points may be available.
 
+![image](https://github.com/user-attachments/assets/d7d9bf93-4fe7-497a-82a1-89f1ff03e643)
+
+
 ---
 
 ### **Code Explanation:**
