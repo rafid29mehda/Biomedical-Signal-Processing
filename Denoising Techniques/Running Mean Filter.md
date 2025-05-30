@@ -41,25 +41,37 @@ The filter moves through the entire signal, applying this average calculation to
 
 ### **End-to-End Example:**
 
-Let’s walk through an end-to-end example of using a **Running Mean Filter** to denoise a synthetic signal. We will:
-
-1. Generate a noisy signal.
-2. Apply the running mean filter.
-3. Plot the original and filtered signals.
-4. Interpret the results.
-
----
-
-#### **Step 1: Create a Noisy Signal**
-
-In this step, we generate a signal with random noise added to it.
+#### **Step 1: Define Parameters and Create a Time Vector**
 
 ```matlab
 % Define parameters
 srate = 1000; % Sampling rate in Hz
 time  = 0:1/srate:3; % Time vector from 0 to 3 seconds
 n     = length(time); % Length of the time vector
+```
 
+1. **`srate = 1000;`**
+
+   * This sets the **sampling rate** to **1000 Hz**. This means the signal is sampled 1000 times per second.
+   * The sampling rate determines how often the data points (samples) are collected. A higher rate means more detailed information over time.
+
+2. **`time  = 0:1/srate:3;`**
+
+   * This creates a **time vector** named `time`.
+   * The syntax `0:1/srate:3` means "start at 0, increase by `1/srate` (which is `1/1000` = 0.001 seconds), and stop at 3 seconds." This will create values like 0, 0.001, 0.002, ..., up to 3 seconds.
+   * The `time` vector will have values that represent the time at each sampled data point.
+   * The **sampling interval** is `1/srate` (i.e., 1 ms).
+
+3. **`n     = length(time);`**
+
+   * This finds the total **number of data points** (samples) in the `time` vector. The length of the `time` vector is calculated by `length(time)` and stored in `n`.
+   * In our case, `n` will be the number of time points from 0 to 3 seconds with a step size of 0.001 seconds. For 3 seconds at 1000 samples per second, `n = 3001`.
+
+---
+
+#### **Step 2: Create a Noisy Signal**
+
+```matlab
 % Create a smooth signal (sinusoidal)
 signal_clean = sin(2 * pi * 5 * time); % A 5 Hz sine wave
 
@@ -68,11 +80,25 @@ noise = 0.5 * randn(size(time)); % Gaussian noise with standard deviation 0.5
 signal_noisy = signal_clean + noise; % The noisy signal
 ```
 
-Here, we create a sinusoidal signal (`signal_clean`) at a frequency of 5 Hz, and then add Gaussian noise to it, resulting in a noisy signal (`signal_noisy`).
+1. **`signal_clean = sin(2 * pi * 5 * time);`**
 
-#### **Step 2: Apply the Running Mean Filter**
+   * This generates a **clean signal**, which is a simple **sine wave**. The equation `sin(2 * pi * 5 * time)` generates a sine wave at a frequency of 5 Hz.
+   * `2 * pi * 5` defines the **angular frequency** (in radians per second), and `time` is the time vector that determines how the sine wave oscillates over time.
+   * The sine wave will oscillate 5 times per second (since it's 5 Hz), and the amplitude of the wave will oscillate between -1 and 1.
 
-Now, let’s apply the running mean filter to the noisy signal.
+2. **`noise = 0.5 * randn(size(time));`**
+
+   * **`randn(size(time))`** generates random noise with a **normal distribution** (Gaussian noise) that has a mean of 0 and a standard deviation of 1.
+   * **`0.5 * randn(size(time))`** scales the generated random noise to have a standard deviation of 0.5. This means the noise is not too extreme but still significant enough to distort the signal.
+
+3. **`signal_noisy = signal_clean + noise;`**
+
+   * This **adds the noise** to the clean sine wave, resulting in a noisy signal (`signal_noisy`).
+   * The `signal_noisy` is now a combination of the clean sine wave and random Gaussian noise, which simulates a real-world noisy measurement.
+
+---
+
+#### **Step 3: Apply the Running Mean Filter**
 
 ```matlab
 % Define the window size for the filter
@@ -87,14 +113,31 @@ for i = k+1:n-k-1
 end
 ```
 
-In this code:
+1. **`k = 20;`**
 
-* `k = 20` means the filter window includes 41 points (20 before and 20 after the current point).
-* We apply the filter to each point by averaging the surrounding points, as described in the formula above.
+   * The variable `k` determines the **half-width** of the window used for the running mean filter.
+   * The window size will be `2k + 1`. In this case, `k = 20` means the window will cover **41 points** (20 before and 20 after each data point).
+   * This will be used to compute the average of 41 neighboring points in the signal for each data point.
 
-#### **Step 3: Visualize the Results**
+2. **`filtsig = zeros(size(signal_noisy));`**
 
-Next, let’s plot the original noisy signal and the filtered signal to compare how well the filter has smoothed the data.
+   * This initializes a new array `filtsig` to store the **filtered signal**.
+   * The size of `filtsig` is the same as `signal_noisy` since we are applying the filter to all points in the noisy signal.
+
+3. **`for i = k+1:n-k-1`**
+
+   * This loop iterates over each data point `i` in the noisy signal, except the first `k` and last `k` points. The reason for excluding the edges is that there are not enough surrounding points to average when you are at the beginning or end of the signal.
+   * `i` will range from `k+1` to `n-k-1`, ensuring that only points in the middle are processed.
+
+4. **`filtsig(i) = mean(signal_noisy(i-k:i+k));`**
+
+   * This is where the **running mean** is applied.
+   * For each point `i`, the function `mean(signal_noisy(i-k:i+k))` calculates the average of the `2k + 1 = 41` surrounding points, from `i-k` to `i+k`.
+   * This average is then assigned to `filtsig(i)`, effectively replacing the noisy value at `i` with the average of its neighbors.
+
+---
+
+#### **Step 4: Plot the Original and Filtered Signals**
 
 ```matlab
 % Plot the original and filtered signals
@@ -110,19 +153,34 @@ legend({'Noisy Signal', 'Filtered Signal'});
 grid on;
 ```
 
-In this plot:
+1. **`figure, hold on`**
 
-* The **red line** represents the noisy signal (`signal_noisy`).
-* The **blue line** represents the filtered signal (`filtsig`).
+   * This creates a new figure for plotting.
+   * **`hold on`** ensures that multiple plot commands are drawn on the same graph without clearing the previous ones.
 
-#### **Step 4: Interpretation**
+2. **`plot(time, signal_noisy, 'r', 'LineWidth', 1.5);`**
 
-When you run the code and view the plot:
+   * This plots the **noisy signal** (`signal_noisy`) using the red color (`'r'`) and sets the line width to 1.5. The `time` vector is used for the x-axis, and the noisy signal is plotted on the y-axis.
 
-* **Noisy Signal**: The red line will show a noisy signal with high-frequency fluctuations (random variations).
-* **Filtered Signal**: The blue line will show the signal after applying the running mean filter. The filter smooths the high-frequency noise, retaining the low-frequency structure (such as the sinusoidal waveform) of the original signal.
+3. **`plot(time, filtsig, 'b', 'LineWidth', 2);`**
 
-The running mean filter has successfully reduced the noise by averaging neighboring points, which smooths out the rapid variations, making the signal easier to analyze.
+   * This plots the **filtered signal** (`filtsig`) using the blue color (`'b'`) and sets the line width to 2. This will overlay the filtered version of the noisy signal.
+
+4. **`xlabel('Time (s)'); ylabel('Amplitude');`**
+
+   * These commands label the x-axis and y-axis with appropriate descriptions: "Time (s)" for the x-axis and "Amplitude" for the y-axis.
+
+5. **`title('Running Mean Filter: Noisy vs Filtered Signal');`**
+
+   * This adds a **title** to the plot that describes the purpose of the plot.
+
+6. **`legend({'Noisy Signal', 'Filtered Signal'});`**
+
+   * This adds a **legend** to the plot that distinguishes between the noisy signal and the filtered signal.
+
+7. **`grid on;`**
+
+   * This enables the **grid** on the plot for better visibility of the data points.
 
 ---
 
