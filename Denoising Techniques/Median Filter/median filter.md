@@ -15,6 +15,8 @@ A **median filter** is a signal processing technique used to **remove spikes or 
 * **Window size (k)**: Number of data points on each side of the current point considered. The total window is `2k+1` points.
 * **Median**: The middle value of sorted numbers. For example, the median of \[2, 7, 4] is 4.
 
+![image](https://github.com/user-attachments/assets/d0f816ad-eba7-41a3-9bb9-cd3b3c76be1e)
+
 ---
 
 ## **Example Code Walkthrough**
