@@ -1,7 +1,3 @@
-Let’s go step by step and **learn Polynomial Detrend in MATLAB** from the very basics. I’ll explain everything: what it is, why you need it, how it works, and break down the code line by line with extra notes and examples.
-
----
-
 ## What is Polynomial Detrending?
 
 **Detrending** is the process of removing a trend (slowly changing component) from your data to analyze the remaining fluctuations (fast changes or noise).
@@ -472,8 +468,4 @@ title('Polynomial Detrending Example')
 * `polyfit(x,y,n)`: Finds polynomial coefficients of order n that fit data (x, y).
 * `polyval(p,x)`: Evaluates polynomial with coefficients p at points x.
 * `detrend(y)`: Removes linear trend (MATLAB built-in).
-
----
-
-### If you have any confusion, or want to see a specific part in even more detail, just ask!
 
